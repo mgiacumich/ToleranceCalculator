@@ -1,0 +1,30 @@
+body {
+    line-height: 1.5em;
+    margin: 0 auto;
+    font-family: 'Noto Sans Mono', monospace;
+    font-size: 14px;
+    color: #030303;
+    background-color: #b2babb;
+  }
+#wrapper {
+    margin: 0 auto;
+    max-width: 720px;
+    padding: 18px;
+    background: #ffffff;
+}
+header, main {
+    width: 80%;
+    max-width: 600px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+input, select, button {
+    margin: 10px 0;
+}
+#result {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+}
