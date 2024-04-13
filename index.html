@@ -1,1 +1,39 @@
-#woops index html yawe 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dimensional Tolerance Calculator</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <h1>Dimensional Tolerance Calculator</h1>
+    <p>Created on: <span id="creationDate"></span></p>
+    <p>By: Your Name</p>
+</header>
+<main>
+    <label for="nominalDiameter">Nominal Diameter:</label>
+    <input type="number" id="nominalDiameter">
+
+    <label for="typeSelect">Type:</label>
+    <select id="typeSelect">
+        <option value="1">Hole</option>
+        <option value="0">Shaft</option>
+    </select>
+
+    <label for="fitType">Type of Fit:</label>
+    <select id="fitType">
+        <option value="0.03;0.004">Loose</option>
+        <option value="0.02;0.003">Close</option>
+        <option value="0.01;0.002">Clearance</option>
+        <!-- Add other options here -->
+    </select>
+
+    <button onclick="computeTolerance()">Compute</button>
+
+    <div id="result"></div>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
