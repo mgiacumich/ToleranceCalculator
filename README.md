@@ -1,3 +1,1 @@
-# Factor-e-
-# ToleranceCalculator
 # ToleranceCalculator
