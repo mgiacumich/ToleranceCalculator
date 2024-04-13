@@ -1,0 +1,75 @@
+body {
+    line-height: 1.5em;
+    margin: 0 auto;
+    font-family: 'Noto Sans Mono', monospace;
+    font-size: 14px;
+    color: #030303;
+    background-color: #b2babb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* This ensures that the content is vertically centered */
+}
+
+#wrapper {
+    margin: 0 auto;
+    max-width: 720px;
+    padding: 18px;
+    background: #ffffff;
+    width: 100%; /* Ensures the wrapper takes the full width if less than max-width */
+    box-sizing: border-box; /* Includes padding in the width */
+}
+
+header, footer, main {
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label, input, select, button {
+    padding: 3px;
+    margin: 5px; /* Adds some space around inputs and labels */
+}
+
+input[type="number"], select {
+    font-family: 'Noto Sans Mono', monospace;
+    font-size: 14px;
+    padding: 3px;
+    margin: 5px 0; /* Additional margin for better spacing */
+}
+
+button {
+    cursor: pointer;
+    margin-top: 10px; /* Space above the button */
+}
+
+#result {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    text-align: left; /* Aligns the text to the left within the result area */
+}
+
+/* Since we are not using a wrapper div, we apply the max-width and margin styles to the main */
+main {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+/* Additional styles for the header to make it look better */
+header {
+    margin-bottom: 20px; /* Space below the header */
+}
+
+/* Make sure the header elements are not too wide */
+header h1, header p {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
