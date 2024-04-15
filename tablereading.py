@@ -13,16 +13,23 @@ descriptor = 'Max'
 # Function to standardize and ensure unique header names based on common prefixes
 def standardize_headers(headers):
     standardized = []
+    header_count = {}
     for header in headers:
-        # Standardize header names for key columns
+        new_header = header
+        
         if header.startswith('Basic Size'):
-            standardized.append('Basic Size')
+            new_header = 'Basic Size'
         elif header.startswith('Fit'):
-            standardized.append('Fit')
+            new_header = 'Fit'
         elif 'Max' in header or 'Min' in header:
-            standardized.append('Descriptor')
+            new_header = 'Descriptor'
+        if new_header in header_count:
+            header_count[new_header] += 1
+            new_header = f"{new_header}_{header_count[new_header]}"
         else:
-            standardized.append(header)
+            header_count[new_header] = 0
+        
+        standardized.append(new_header)
     return standardized
 
 # List to collect the results
