@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dimensional Tolerance Calculator </title>
+<title>Dimensional Tolerance Calculator</title>
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -16,24 +16,118 @@
     <label for="nominalDiameter">Nominal Diameter:</label>
     <input type="number" id="nominalDiameter">
 
-    <label for="typeSelect">Type:</label>
-    <select id="typeSelect">
-        <option value="1">Hole</option>
-        <option value="0">Shaft</option>
+    <label for="typeSelect">Dimensioning a:</label>
+    <select id="typeSelect" onchange="enableFormElements(); updateLabels();">
+        <option value="" selected disabled>Please select type...</option>
+        <option value="hole">Hole</option>
+        <option value="shaft">Shaft</option>
     </select>
+
+    <div class="form-row form-row-tolerance">
+        <label for="upperTolerance">Tolerance Upper:</label>
+        <input type="number" id="upperTolerance" disabled>
+
+        <label for="lowerTolerance">Tolerance Lower:</label>
+        <input type="number" id="lowerTolerance" disabled>
+    </div>
 
     <label for="fitType">Type of Fit:</label>
-    <select id="fitType">
-        <option value="0.03;0.004">Loose</option>
-        <option value="0.02;0.003">Close</option>
-        <option value="0.01;0.002">Clearance</option>
-        <!-- Add other options here -->
+    <select id="fitType" disabled>
+        <!-- Options will be dynamically populated -->
     </select>
 
-    <button onclick="computeTolerance()">Compute</button>
+    <!-- Row for the compute button -->
+    <div class="form-row form-row-button">
+        <button onclick="computeTolerance()">Compute</button>
+    </div>
 
     <div id="result"></div>
+
+<!-- Disclaimer section -->
+<footer>
+    <p class="disclaimer">* Please note that all dimensions are in mm - calculator only accepts 1-500 mm.</p>
+    <p class="disclaimer">* If you are dimensioning a shaft, then we consider the hole basis fits (a.k.a we keep the hole tolerances constant) and vise versa for dimensioning a hole .</p>
+</footer>
+
 </main>
 <script src="js/script.js"></script>
+<script>
+function enableFormElements() {
+    var typeSelectValue = document.getElementById('typeSelect').value;
+    var fitType = document.getElementById('fitType');
+    var upperTolerance = document.getElementById('upperTolerance');
+    var lowerTolerance = document.getElementById('lowerTolerance');
+
+    // Check if the user has selected a valid option
+    var isEnabled = typeSelectValue === 'hole' || typeSelectValue === 'shaft';
+
+    // Enable or disable the form elements based on the user's selection
+    fitType.disabled = !isEnabled;
+    upperTolerance.disabled = !isEnabled;
+    lowerTolerance.disabled = !isEnabled;
+
+    // If no valid option is selected, clear previous values
+    if (!isEnabled) {
+        fitType.innerHTML = ''; // Clear all options
+        upperTolerance.value = '';
+        lowerTolerance.value = '';
+    } else {
+        updateFitTypeOptions(); // Populate fit type options based on selection
+    }
+}
+
+function updateLabels() {
+    var type = document.getElementById('typeSelect').value;
+    var upperToleranceLabel = document.querySelector('label[for="upperTolerance"]');
+    var lowerToleranceLabel = document.querySelector('label[for="lowerTolerance"]');
+    if (type === 'hole') {
+        upperToleranceLabel.textContent = 'Shaft Upper Tolerance:';
+        lowerToleranceLabel.textContent = 'Shaft Lower Tolerance:';
+    } else if (type === 'shaft') {
+        upperToleranceLabel.textContent = 'Hole Upper Tolerance:';
+        lowerToleranceLabel.textContent = 'Hole Lower Tolerance:';
+    }
+}
+
+// Function to update the "Type of Fit" options
+function updateFitTypeOptions() {
+    var typeSelect = document.getElementById('typeSelect');
+    var fitType = document.getElementById('fitType');
+    
+    // Clear existing options
+    fitType.innerHTML = '';
+
+    // Define options for "hole" and "shaft"
+    var options = {
+        'hole': [
+            { text: 'Loose Running, H11/', value: 'loose-running' },
+            { text: 'Free Running', value: 'free-running' },
+            // ... more options for "hole"
+        ],
+        'shaft': [
+            { text: 'Close Running', value: 'close-running' },
+            { text: 'Sliding Fit', value: 'sliding-fit' },
+            // ... more options for "shaft"
+        ]
+    };
+
+    // Get the selected type
+    var selectedType = typeSelect.value;
+
+    // Populate the dropdown with new options
+    options[selectedType].forEach(function(option) {
+        var opt = document.createElement('option');
+        opt.value = option.value;
+        opt.textContent = option.text;
+        fitType.appendChild(opt);
+    });
+}
+
+// Initialize options on page load
+window.onload = function() {
+    enableFormElements(); // This will disable the form elements initially
+    document.getElementById('creationDate').textContent = new Date().toLocaleDateString();
+};
+</script>
 </body>
 </html>

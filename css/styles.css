@@ -12,41 +12,54 @@ body {
     height: 100vh; /* This ensures that the content is vertically centered */
 }
 
-#wrapper {
-    margin: 0 auto;
+main {
     max-width: 720px;
     padding: 18px;
     background: #ffffff;
-    width: 100%; /* Ensures the wrapper takes the full width if less than max-width */
+    width: 100%; /* Ensures the main content takes the full width if less than max-width */
     box-sizing: border-box; /* Includes padding in the width */
+    text-align: center;
 }
 
 header, footer, main {
-    text-align: center;
     padding: 7px;
 }
 
 form {
     display: flex;
     flex-direction: column;
+    width: 100%; /* Full width */
     align-items: center;
 }
 
-label, input, select, button {
-    padding: 7px;
-    margin: 5px; /* Adds some space around inputs and labels */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; /* Full width */
+    margin-bottom: 15px; /* Space between rows */
+}
+
+/* Style for a single form row with two inputs (upper and lower tolerance) */
+.form-row-tolerance {
+    justify-content: space-evenly;
+    margin-top: 15px; /* Increased space between rows */
+    
+}
+
+/* Style for the button to be on its own line */
+.form-row-button {
+    justify-content: center;
+    margin-top: 15px;
 }
 
 input[type="number"], select {
-    font-family: 'Noto Sans Mono', monospace;
-    font-size: 14px;
-    padding: 3px;
-    margin: 5px 0; /* Additional margin for better spacing */
+    flex: 1; /* Allow inputs to grow and fill the space */
+    margin: 0 10px; /* Add horizontal spacing between inputs */
 }
 
 button {
-    cursor: pointer;
-    margin-top: 10px; /* Space above the button */
+    width: auto; /* Allow the button to size according to its content */
+    padding: 10px 20px; /* Button padding for better touch area */
 }
 
 #result {
@@ -57,20 +70,32 @@ button {
     text-align: left; /* Aligns the text to the left within the result area */
 }
 
-/* Since we are not using a wrapper div, we apply the max-width and margin styles to the main */
-main {
-    max-width: 720px;
-    margin: 0 auto;
+/* Disclaimer styles */
+footer {
+    margin-top: 20px;
+    padding: 10px;
+    text-align: center; /* Ensures the disclaimer text is centered */
+    width: 100%; /* Ensures the footer takes the full width */
+    box-sizing: border-box; /* Includes padding in the width */
 }
 
-/* Additional styles for the header to make it look better */
+.disclaimer {
+    font-size: 12px; /* Smaller font size for disclaimers */
+    color: #6c757d; /* A standard color for disclaimers */
+    margin: 5px 0; /* Space between disclaimer lines */
+}
+
 header {
     margin-bottom: 20px; /* Space below the header */
 }
 
-/* Make sure the header elements are not too wide */
 header h1, header p {
     max-width: 720px;
     margin: 0 auto;
+}
+
+/* Ensure all text elements within the header are centered and have a limited width */
+header h1, header p {
+    text-align: center;
 }
 
