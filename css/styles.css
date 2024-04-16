@@ -15,7 +15,7 @@ body {
 main {
     max-width: 720px;
     padding: 18px;
-    background: #ffffff;
+    background-color: #b2babb;
     width: 100%; /* Ensures the main content takes the full width if less than max-width */
     box-sizing: border-box; /* Includes padding in the width */
     text-align: center;
