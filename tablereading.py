@@ -1,57 +1,78 @@
-
 import pandas as pd
-
-# Define file paths for "hole" basis and "shaft" basis data sets
-hole_files = ['Hole1.csv', 'Hole2.csv', 'Hole3.csv', 'Hole4.csv' ]  # Adjust paths as necessary
-shaft_files = ['shaft1.csv', 'shaft2.csv', 'shaft3.csv', 'shaft4.csv']  # Adjust paths as necessary
+import numpy as np
 
 
-def load_files(file_list):
-    combined_data = pd.DataFrame()
-    for file_path in file_list:
-        print(f"Loading file: {file_path}")
-        data = pd.read_csv(file_path, header=[0, 1])
+def load_csv(csv_paths):
+    all_dfs = []  # List to store each DataFrame loaded from the CSVs
+    for csv_path in csv_paths:
+        df = pd.read_csv(csv_path, header=[0, 1])
+        header = df.columns.to_flat_index().str.join('_').str.strip('_')
+        df.columns = header
+        df = df.iloc[2:].reset_index(drop=True)
+        df.rename(columns={header[0]: 'Basic Size', header[1]: 'Max/Min'}, inplace=True)
+        df.set_index(['Basic Size', 'Max/Min'], inplace=True)
         
-        # Fix the headers by removing any 'Unnamed' labels and ensuring proper labeling
-        data.columns = pd.MultiIndex.from_tuples([(x if 'Unnamed' not in x[0] else y, x[1])
-                                                  for x, y in zip(data.columns, ['Basic Size', 'Max/Min'] + [x[0] for x in data.columns[2:]][::3] * 3)])
+        # Convert strings with comma decimals to floats
+        for col in df.select_dtypes(include='object').columns:
+            df[col] = df[col].str.replace(',', '.').astype(float)
         
-        print("Columns after renaming:", data.columns[2])
-        
-        # Set the first two columns ('Basic Size', 'Max/Min') as the multi-index
-        data.set_index(('Basic Size', 'MaxMin'), inplace=True)
-        
-        # Combine the data from each file
-        combined_data = pd.concat([combined_data, data], axis=0)
+        all_dfs.append(df)
+    #return all_dfs
+    combined_df = pd.concat(all_dfs)
+    #print(combined_df)
+    return combined_df
+    
 
+def convert_index_to_float(df):
+    # Ensure the 'Basic Size' index is a float for proper indexing
+    df.index = df.index.set_levels(df.index.levels[0].astype(float), level=0)
+    return df
 
-    return combined_data
+def get_min_max_values(df, category, fit, basic_size):
+    # Convert the basic_size to a float and construct the column prefix
+    basic_size = float(basic_size)
+    prefix = f"{category}_{fit}"
+    
+    # Query the DataFrame for Min and Max values
+    min_val = df.loc[(basic_size, 'Min'), df.columns.str.startswith(prefix)].values[0]
+    max_val = df.loc[(basic_size, 'Max'), df.columns.str.startswith(prefix)].values[0]
+    return min_val, max_val
 
-# Example file paths
-hole_data = load_files(hole_files)
-print(hole_data.head())
+def find_nearest_greater_size(df, basic_size):
+    # Get all available sizes and find the closest larger size
+    available_sizes = df.index.levels[0].values
+    larger_sizes = available_sizes[available_sizes > basic_size]
+    if larger_sizes.size > 0:
+        nearest_size = np.min(larger_sizes)
+        print(f"Value rounded up to {nearest_size}")
+        return nearest_size
+    else:
+        raise ValueError("No larger size available.")
 
-# Function to retrieve Min and Max values based on user inputs
-def get_min_max_values(data, descriptor, hole_or_shaft, basic_size):
-    # Filter data based on Basic Size and convert to numeric as needed
-    basic_size_data = data.xs(basic_size, level='Basic Size', axis=1, drop_level=False)
-    try:
-        specific_data = basic_size_data.xs(descriptor, level='Descriptor', axis=1).xs(hole_or_shaft, level='Hole/Shaft', axis=1)
-        min_value = pd.to_numeric(specific_data.loc['Min'], errors='coerce').min()
-        max_value = pd.to_numeric(specific_data.loc['Max'], errors='coerce').max()
-        return min_value, max_value
-    except KeyError:
-        return "Data not found", "Data not found"
+# File paths for the CSV data
+hole_csv_paths = ['Hole1.csv', 'Hole2.csv', 'Hole3.csv', 'Hole4.csv']
+shaft_csv_paths = ['Shaft1.csv', 'Shaft2.csv', 'Shaft3.csv', 'Shaft4.csv']
 
-# Example usage
-descriptor = "Loose Running C11/h11"  # or any other descriptor as per user's choice
-hole_or_shaft = "Hole"  # or "Shaft" depending on the user's choice
-basic_size = '30'  # example basic size
+# Load and clean the CSV files
+hole_df_cleaned = load_csv(hole_csv_paths)
+shaft_df_cleaned = load_csv(shaft_csv_paths)
 
-# Choose the correct data set based on whether we are considering the hole or shaft as constant
-if hole_or_shaft == "Hole":
-    min_val, max_val = get_min_max_values(hole_data, descriptor, hole_or_shaft, basic_size)
-else:
-    min_val, max_val = get_min_max_values(shaft_data, descriptor, hole_or_shaft, basic_size)
+# Convert the 'Basic Size' index to float for both DataFrames
+hole_df_cleaned_float_index = convert_index_to_float(hole_df_cleaned)
+shaft_df_cleaned_float_index = convert_index_to_float(shaft_df_cleaned)
 
-print(f"Min Fit: {min_val}, Max Fit: {max_val}")
+# Define query parameters
+category = 'Loose Running H11/cll'  # Category to query, such as fit type
+basic_size = 1.8  # Basic size as a float
+hole_or_shaft = 'Shaft'  # Define whether to query 'Hole' or 'Shaft'
+fit = 'Fit'
+
+# Choose the correct DataFrame based on 'Hole' or 'Shaft'
+df_to_query = hole_df_cleaned_float_index if hole_or_shaft == 'Hole' else shaft_df_cleaned_float_index
+
+if basic_size not in df_to_query.index.levels[0]:
+    basic_size = find_nearest_greater_size(df_to_query, basic_size)
+
+# Get the min and max values for the specified basic size and category
+min_val, max_val = get_min_max_values(df_to_query, category, fit, basic_size)
+print(f"{hole_or_shaft} - Basic Size {basic_size}, Category {category}: Min Value = {min_val}, Max Value = {max_val}")
